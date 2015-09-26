@@ -1,5 +1,6 @@
 package com.rocdev.android.takenlijst;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,14 +54,17 @@ public class TakenlijstDB {
             "CREATE TABLE " + LIJST_TABEL + " (" +
                     LIJST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     LIJST_NAAM + " TEXT NOT NULL UNIQUE);";
+
     public static final String CREATE_TAAK_TABLE =
-            "CREATE TABLE " + TAAK_TABEL + "(" +
+            "CREATE TABLE " + TAAK_TABEL + " (" +
                     TAAK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     TAAK_LIJST_ID + " INTEGER NOT NULL, " +
                     TAAK_NAAM + " TEXT NOT NULL, " +
                     TAAK_NOTITIE + " TEXT, " +
                     TAAK_AFGEROND + " TEXT, " +
                     TAAK_VERBORGEN + " TEXT);";
+
+
 
     public static final String DROP_LIJST_TABEL =
             "DROP TABLE IF EXISTS " + LIJST_TABEL;
@@ -156,6 +160,46 @@ public class TakenlijstDB {
         }
     }
 
+    public long voegTaakToe(Taak taak) {
+        ContentValues cv = new ContentValues();
+        cv.put(TAAK_LIJST_ID, taak.getLijstId());
+        cv.put(TAAK_NAAM, taak.getNaam());
+        cv.put(TAAK_NOTITIE, taak.getNotitie());
+        cv.put(TAAK_AFGEROND, taak.getAfgerond());
+        cv.put(TAAK_VERBORGEN, taak.getVerborgen());
+
+        this.openWritableDB();
+        long rijId = db.insert(TAAK_TABEL, null, cv);
+        this.closeDB();
+        return rijId;
+    }
+
+    public int updateTaak(Taak taak) {
+        ContentValues cv = new ContentValues();
+        cv.put(TAAK_LIJST_ID, taak.getLijstId());
+        cv.put(TAAK_NAAM, taak.getNaam());
+        cv.put(TAAK_NOTITIE, taak.getNotitie());
+        cv.put(TAAK_AFGEROND, taak.getAfgerond());
+        cv.put(TAAK_VERBORGEN, taak.getVerborgen());
+
+        String where = TAAK_ID + "= ?";
+        String[] whereArgs = { String.valueOf(taak.getTaakId()) };
+
+        this.openWritableDB();
+        int rijCount = db.update(TAAK_TABEL, cv, where, whereArgs);
+        db.close();
+        return rijCount;
+    }
+
+    public int deleteTaak(long id) {
+        String where = TAAK_ID + "= ?";
+        String[] whereArgs = { String.valueOf(id)};
+        this.openWritableDB();
+        int rijCount = db.delete(TAAK_TABEL, where, whereArgs);
+        db.close();
+        return rijCount;
+    }
+
 
 
     class DBHelper extends SQLiteOpenHelper {
@@ -171,13 +215,14 @@ public class TakenlijstDB {
             db.execSQL(CREATE_LIJST_TABLE);
             db.execSQL(CREATE_TAAK_TABLE);
             //paar default lijsten invoeren
-            db.execSQL("INSERT INTO lijst VALUES (1, Persoonlijk");
-            db.execSQL("INSERT INTO lijst VALUES (2, Zakelijk");
+            db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
+            db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
-            db.execSQL("INSERT INT0 taak VALUES (1, 1, 'Rekeningen betalen'" +
-            "'huur\ntelefoon\ninternet', 0, 0)");
-            db.execSQL("INSERT INT0 taak VALUES (2, 1, 'Naar kapper'" +
-                    "'', 0, 0)");
+            db.execSQL("INSERT INTO taak VALUES (1, 1, 'Rekeningen betalen', " +
+            "'', '0', '0')");
+            db.execSQL("INSERT INTO taak VALUES (2, 1, 'Naar kapper', " +
+                    "'', '0', '0')");
+
 
         }
 
