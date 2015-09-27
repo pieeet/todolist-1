@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by piet on 23-09-15.
@@ -61,8 +60,8 @@ public class TakenlijstDB {
                     TAAK_LIJST_ID + " INTEGER NOT NULL, " +
                     TAAK_NAAM + " TEXT NOT NULL, " +
                     TAAK_NOTITIE + " TEXT, " +
-                    TAAK_AFGEROND + " TEXT, " +
-                    TAAK_VERBORGEN + " TEXT);";
+                    TAAK_AFGEROND + " INTEGER, " +
+                    TAAK_VERBORGEN + " INTEGER);";
 
 
 
@@ -96,7 +95,7 @@ public class TakenlijstDB {
     public ArrayList<Taak> getTaken(String lijstNaam) {
 
         String where = TAAK_LIJST_ID + "= ? AND " +
-                TAAK_VERBORGEN + "!='1'";
+                TAAK_VERBORGEN + "!=1";
         int listID = getLijst(lijstNaam).getId();
         String[] whereArgs = { Integer.toString(listID)};
         this.openReadableDB();
@@ -150,8 +149,8 @@ public class TakenlijstDB {
                 taak.setLijstId(cursor.getInt(TAAK_LIJST_ID_COL));
                 taak.setNaam(cursor.getString(TAAK_NAAM_COL));
                 taak.setNotitie(cursor.getString(TAAK_NOTITIE_COL));
-                taak.setAfgerond(cursor.getString(TAAK_AFGEROND_COL));
-                taak.setVerborgen(cursor.getString(TAAK_VERBORGEN_COL));
+                taak.setDatumAfgerond(cursor.getInt(TAAK_AFGEROND_COL));
+                taak.setVerborgen(cursor.getInt(TAAK_VERBORGEN_COL));
                 return taak;
             }
             catch(Exception e) {
@@ -165,7 +164,7 @@ public class TakenlijstDB {
         cv.put(TAAK_LIJST_ID, taak.getLijstId());
         cv.put(TAAK_NAAM, taak.getNaam());
         cv.put(TAAK_NOTITIE, taak.getNotitie());
-        cv.put(TAAK_AFGEROND, taak.getAfgerond());
+        cv.put(TAAK_AFGEROND, taak.getDatumAfgerond());
         cv.put(TAAK_VERBORGEN, taak.getVerborgen());
 
         this.openWritableDB();
@@ -179,7 +178,7 @@ public class TakenlijstDB {
         cv.put(TAAK_LIJST_ID, taak.getLijstId());
         cv.put(TAAK_NAAM, taak.getNaam());
         cv.put(TAAK_NOTITIE, taak.getNotitie());
-        cv.put(TAAK_AFGEROND, taak.getAfgerond());
+        cv.put(TAAK_AFGEROND, taak.getDatumAfgerond());
         cv.put(TAAK_VERBORGEN, taak.getVerborgen());
 
         String where = TAAK_ID + "= ?";
@@ -219,9 +218,9 @@ public class TakenlijstDB {
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
             db.execSQL("INSERT INTO taak VALUES (1, 1, 'Rekeningen betalen', " +
-            "'', '0', '0')");
+            "'', 0, 0)");
             db.execSQL("INSERT INTO taak VALUES (2, 1, 'Naar kapper', " +
-                    "'', '0', '0')");
+                    "'', 0, 0)");
 
 
         }

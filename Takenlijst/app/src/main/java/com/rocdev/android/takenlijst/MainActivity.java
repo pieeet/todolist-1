@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         //test taak toevoegen
         TakenlijstDB db = new TakenlijstDB(this);
-        Taak taak = new Taak(1, "App testen", "", "0", "0");
+        Taak taak = new Taak(1, "App testen", "", 0, 0);
         long voegToeId = db.voegTaakToe(taak);
         if (voegToeId > 0) {
             sb.append("Rij toegevoegd, id:" + voegToeId + "\n");

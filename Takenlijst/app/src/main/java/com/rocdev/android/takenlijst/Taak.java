@@ -8,31 +8,31 @@ public class Taak {
     private int lijstId;
     private String naam;
     private String notitie;
-    private String afgerond;
-    private String verborgen;
+    private long datumAfgerond;
+    private int verborgen;
 
     public Taak() {
         naam = "";
         notitie = "";
-        afgerond = "";
-        verborgen = "";
+        datumAfgerond = 0L;
+        verborgen = 0;
     }
 
-    public Taak(int lijstId, String naam, String notitie, String afgerond, String verborgen) {
+    public Taak(int lijstId, String naam, String notitie, long afgerond, int verborgen) {
         this.lijstId = lijstId;
         this.naam = naam;
         this.notitie = notitie;
-        this.afgerond = afgerond;
+        this.datumAfgerond = afgerond;
         this.verborgen = verborgen;
     }
 
-    public Taak(int taakId, int lijstId, String naam, String notitie, String afgerond,
-                String verborgen) {
+    public Taak(int taakId, int lijstId, String naam, String notitie, long afgerond,
+                int verborgen) {
         this.taakId = taakId;
         this.lijstId = lijstId;
         this.naam = naam;
         this.notitie = notitie;
-        this.afgerond = afgerond;
+        this.datumAfgerond = afgerond;
         this.verborgen = verborgen;
     }
 
@@ -68,19 +68,19 @@ public class Taak {
         this.notitie = notitie;
     }
 
-    public String getAfgerond() {
-        return afgerond;
+    public long getDatumAfgerond() {
+        return datumAfgerond;
     }
 
-    public void setAfgerond(String afgerond) {
-        this.afgerond = afgerond;
+    public void setDatumAfgerond(long datumAfgerond) {
+        this.datumAfgerond = datumAfgerond;
     }
 
-    public String getVerborgen() {
+    public int getVerborgen() {
         return verborgen;
     }
 
-    public void setVerborgen(String verborgen) {
+    public void setVerborgen(int verborgen) {
         this.verborgen = verborgen;
     }
 }
