@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         // test taak deleten
         int deleteCount = db.deleteTaak(voegToeId);
         if (deleteCount == 1) {
-            sb.append("Taak verwijderd, aantal verwijderd: " + deleteCount + "\n");
+            sb.append("Taak verwijderd, aantal verwijderd: " + deleteCount + "\n\n");
         }
 
         //alle taken tonen

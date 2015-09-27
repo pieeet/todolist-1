@@ -75,6 +75,7 @@ public class TakenlijstDB {
     private SQLiteDatabase db;
     private DBHelper dbHelper;
 
+
     public TakenlijstDB(Context context) {
         dbHelper = new DBHelper(context, DB_NAAM, null, DB_VERSIE);
     }
@@ -89,7 +90,15 @@ public class TakenlijstDB {
     }
 
     private void closeDB() {
-        db.close();
+        if (db != null) {
+            db.close();
+        }
+    }
+
+    private void closeCursor(Cursor cursor) {
+        if (cursor != null) {
+            cursor.close();
+        }
     }
 
     public ArrayList<Taak> getTaken(String lijstNaam) {
@@ -104,6 +113,8 @@ public class TakenlijstDB {
         while (cursor.moveToNext()) {
             taken.add(getTaakVanCursor(cursor));
         }
+        closeCursor(cursor);
+        closeDB();
         return taken;
     }
 
@@ -114,9 +125,8 @@ public class TakenlijstDB {
         Cursor cursor = db.query(TAAK_TABEL, null, where, whereArgs, null, null, null);
         cursor.moveToFirst();
         Taak taak = getTaakVanCursor(cursor);
-        if (cursor != null) {
-            this.closeDB();
-        }
+        closeCursor(cursor);
+        closeDB();
         return taak;
     }
 
@@ -131,8 +141,7 @@ public class TakenlijstDB {
         cursor.moveToFirst();
         lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
                 cursor.getString(LIJST_NAAM_COL));
-        if (cursor != null)
-            cursor.close();
+        this.closeCursor(cursor);
         this.closeDB();
 
         return lijst;
@@ -186,7 +195,7 @@ public class TakenlijstDB {
 
         this.openWritableDB();
         int rijCount = db.update(TAAK_TABEL, cv, where, whereArgs);
-        db.close();
+        this.closeDB();
         return rijCount;
     }
 
@@ -195,7 +204,7 @@ public class TakenlijstDB {
         String[] whereArgs = { String.valueOf(id)};
         this.openWritableDB();
         int rijCount = db.delete(TAAK_TABEL, where, whereArgs);
-        db.close();
+        this.closeDB();
         return rijCount;
     }
 
