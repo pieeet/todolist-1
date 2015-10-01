@@ -27,8 +27,8 @@ public class TakenlijstDB {
     public static final String LIJST_NAAM = "lijst_naam";
     public static final int LIJST_NAAM_COL = 1;
 
-    //taak-tabel constanten
-    public static final String TAAK_TABEL = "taak";
+    //listview_taak-tabel constanten
+    public static final String TAAK_TABEL = "listview_taak";
 
     public static final String TAAK_ID = "_id";
     public static final int TAAK_ID_COL = 0;
@@ -158,7 +158,7 @@ public class TakenlijstDB {
                 taak.setLijstId(cursor.getInt(TAAK_LIJST_ID_COL));
                 taak.setNaam(cursor.getString(TAAK_NAAM_COL));
                 taak.setNotitie(cursor.getString(TAAK_NOTITIE_COL));
-                taak.setDatumAfgerond(cursor.getInt(TAAK_AFGEROND_COL));
+                taak.setDatumMillisVoltooid(cursor.getInt(TAAK_AFGEROND_COL));
                 taak.setVerborgen(cursor.getInt(TAAK_VERBORGEN_COL));
                 return taak;
             }
@@ -173,7 +173,7 @@ public class TakenlijstDB {
         cv.put(TAAK_LIJST_ID, taak.getLijstId());
         cv.put(TAAK_NAAM, taak.getNaam());
         cv.put(TAAK_NOTITIE, taak.getNotitie());
-        cv.put(TAAK_AFGEROND, taak.getDatumAfgerond());
+        cv.put(TAAK_AFGEROND, taak.getDatumMillisVoltooid());
         cv.put(TAAK_VERBORGEN, taak.getVerborgen());
 
         this.openWritableDB();
@@ -187,7 +187,7 @@ public class TakenlijstDB {
         cv.put(TAAK_LIJST_ID, taak.getLijstId());
         cv.put(TAAK_NAAM, taak.getNaam());
         cv.put(TAAK_NOTITIE, taak.getNotitie());
-        cv.put(TAAK_AFGEROND, taak.getDatumAfgerond());
+        cv.put(TAAK_AFGEROND, taak.getDatumMillisVoltooid());
         cv.put(TAAK_VERBORGEN, taak.getVerborgen());
 
         String where = TAAK_ID + "= ?";
@@ -226,9 +226,13 @@ public class TakenlijstDB {
             db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
-            db.execSQL("INSERT INTO taak VALUES (1, 1, 'Rekeningen betalen', " +
-            "'', 0, 0)");
-            db.execSQL("INSERT INTO taak VALUES (2, 1, 'Naar kapper', " +
+            db.execSQL("INSERT INTO listview_taak VALUES (1, 1, 'Rekeningen betalen', " +
+            "'internet\nelectra\nkrant', 0, 0)");
+            db.execSQL("INSERT INTO listview_taak VALUES (2, 1, 'Naar kapper', " +
+                    "'', 0, 0)");
+            db.execSQL("INSERT INTO listview_taak VALUES (3, 2, 'KvK bellen', " +
+                    "'', 0, 0)");
+            db.execSQL("INSERT INTO listview_taak VALUES (4, 2, 'Manager ontslaan', " +
                     "'', 0, 0)");
 
 

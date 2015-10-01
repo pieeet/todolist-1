@@ -22,6 +22,11 @@
             android:label="@string/title_activity_test_db"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".AddEditActivity"
+            android:label="@string/title_activity_add_edit"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

@@ -8,31 +8,31 @@ public class Taak {
     private int lijstId;
     private String naam;
     private String notitie;
-    private long datumAfgerond;
+    private long datumMillisVoltooid;
     private int verborgen;
 
     public Taak() {
         naam = "";
         notitie = "";
-        datumAfgerond = 0L;
+        datumMillisVoltooid = 0L;
         verborgen = 0;
     }
 
-    public Taak(int lijstId, String naam, String notitie, long afgerond, int verborgen) {
+    public Taak(int lijstId, String naam, String notitie, long datumMillisVoltooid, int verborgen) {
         this.lijstId = lijstId;
         this.naam = naam;
         this.notitie = notitie;
-        this.datumAfgerond = afgerond;
+        this.datumMillisVoltooid = datumMillisVoltooid;
         this.verborgen = verborgen;
     }
 
-    public Taak(int taakId, int lijstId, String naam, String notitie, long afgerond,
+    public Taak(int taakId, int lijstId, String naam, String notitie, long datumMillisVoltooid,
                 int verborgen) {
         this.taakId = taakId;
         this.lijstId = lijstId;
         this.naam = naam;
         this.notitie = notitie;
-        this.datumAfgerond = afgerond;
+        this.datumMillisVoltooid = datumMillisVoltooid;
         this.verborgen = verborgen;
     }
 
@@ -68,12 +68,12 @@ public class Taak {
         this.notitie = notitie;
     }
 
-    public long getDatumAfgerond() {
-        return datumAfgerond;
+    public long getDatumMillisVoltooid() {
+        return datumMillisVoltooid;
     }
 
-    public void setDatumAfgerond(long datumAfgerond) {
-        this.datumAfgerond = datumAfgerond;
+    public void setDatumMillisVoltooid(long datumMillisVoltooid) {
+        this.datumMillisVoltooid = datumMillisVoltooid;
     }
 
     public int getVerborgen() {

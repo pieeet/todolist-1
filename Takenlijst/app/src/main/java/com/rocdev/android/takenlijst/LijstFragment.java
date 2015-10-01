@@ -1,14 +1,15 @@
 package com.rocdev.android.takenlijst;
 
-
+import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
+
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,14 +17,29 @@ import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link LijstFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link LijstFragment#newInstance} factory method to
+ * create an instance of this fragment.
  */
-public class LijstPersoonlijkFragment extends Fragment {
-//    TextView taakTextView;
+public class LijstFragment extends Fragment {
+    //    TextView taakTextView;
     ListView taakListView;
+    int tabPos;
 
-    public LijstPersoonlijkFragment() {
+
+    public LijstFragment() {
         // Required empty public constructor
     }
+
+
+
+    public void setTabPos(int tabPos) {
+        this.tabPos = tabPos;
+    }
+
+
 
 
     @Override
@@ -31,30 +47,22 @@ public class LijstPersoonlijkFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_lijst_persoonlijk, container, false);
+        View view = inflater.inflate(R.layout.fragment_lijst, container, false);
 
-        // get references to widgets
-//        taakTextView = (TextView) view.findViewById (R.id.taakPersoonlijkTextView);
-        taakListView = (ListView) view.findViewById (R.id.takenlijst_persoonlijk_listView);
+        // get references to widget
+        taakListView = (ListView) view.findViewById (R.id.takenlijst_listView);
         refreshTaskList();
         return view;
     }
 
     public void refreshTaskList() {
+        String[] lijsten = {"Persoonlijk", "Zakelijk"};
         // get the database object
         TakenlijstDB db = new TakenlijstDB(getActivity().getApplicationContext());
 
         // get the tasks
-        ArrayList<Taak> taken = db.getTaken("Persoonlijk");
+        ArrayList<Taak> taken = db.getTaken(lijsten[tabPos]);
 
-        // build the string for the tasks
-//        String text = "";
-//        for (Taak task : tasks) {
-//            text += task.getNaam() + "\n";
-//        }
-//
-//        // display the string on the user interface
-//        taakTextView.setText(text);
 
         // create a List of Map<String, ?> objects
         ArrayList<HashMap<String, String>> data =
@@ -82,6 +90,5 @@ public class LijstPersoonlijkFragment extends Fragment {
         super.onResume();
         refreshTaskList();
     }
-
 
 }

@@ -16,20 +16,29 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         this.aantalTabs = aantalTabs;
     }
 
+//    @Override
+//    public Fragment getItem(int position) {
+//        switch (position) {
+//            case 0:
+//                LijstPersoonlijkFragment tab1 = new LijstPersoonlijkFragment();
+//                return tab1;
+//            case 1:
+//                LijstZakelijkFragment tab2 = new LijstZakelijkFragment();
+//                return tab2;
+//            default:
+//                return null;
+//
+//        }
+//    }
+
+
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case 0:
-                LijstPersoonlijkFragment tab1 = new LijstPersoonlijkFragment();
-                return tab1;
-            case 1:
-                LijstZakelijkFragment tab2 = new LijstZakelijkFragment();
-                return tab2;
-            default:
-                return null;
-
-        }
+        LijstFragment tab = new LijstFragment();
+        tab.setTabPos(position);
+        return tab;
     }
+
 
     @Override
     public int getCount() {

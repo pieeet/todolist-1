@@ -1,5 +1,6 @@
 package com.rocdev.android.takenlijst;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,8 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    StringBuilder sb = new StringBuilder();
+    TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +34,16 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Persoonijk"));
-        tabLayout.addTab(tabLayout.newTab().setText("Zakelijk"));
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayout.Tab tab1 = tabLayout.newTab();
+        tab1.setTag("Persoonlijk");
+        tab1.setText((CharSequence) tab1.getTag());
+        tabLayout.addTab(tab1);
+        TabLayout.Tab tab2 = tabLayout.newTab();
+        tab2.setTag("Zakelijk");
+        tab2.setText((CharSequence) tab2.getTag());
+        tabLayout.addTab(tab2);
+        //tabLayout.addTab(tabLayout.newTab().setText("Zakelijk"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager pager = (ViewPager) findViewById(R.id.pager);
@@ -58,10 +65,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
-
-
-
-
     }
 
     @Override
@@ -81,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        else if (id == R.id.menuAddTaak) {
+            int tabPos = tabLayout.getSelectedTabPosition();
+            Intent intent = new Intent(this, AddEditActivity.class);
         }
 
         return super.onOptionsItemSelected(item);
