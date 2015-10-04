@@ -16,7 +16,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    TabLayout tabLayout;
+    private TabLayout tabLayout;
+    TakenlijstDB db;
+    PagerAdapter adapter;
+    ViewPager pager;
+    int tabPos;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,21 +40,19 @@ public class MainActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
-
+        db = new TakenlijstDB(getApplicationContext());
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        TabLayout.Tab tab1 = tabLayout.newTab();
-        tab1.setTag("Persoonlijk");
-        tab1.setText((CharSequence) tab1.getTag());
-        tabLayout.addTab(tab1);
-        TabLayout.Tab tab2 = tabLayout.newTab();
-        tab2.setTag("Zakelijk");
-        tab2.setText((CharSequence) tab2.getTag());
-        tabLayout.addTab(tab2);
+        for (String lijstnaam: TakenlijstDB.LIJST_NAMEN) {
+            TabLayout.Tab tab = tabLayout.newTab();
+            tab.setText(lijstnaam);
+            tab.setTag(lijstnaam);
+            tabLayout.addTab(tab);
+        }
         //tabLayout.addTab(tabLayout.newTab().setText("Zakelijk"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        final ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(),
+        tabPos = tabLayout.getSelectedTabPosition();
+        pager = (ViewPager) findViewById(R.id.pager);
+        adapter = new PagerAdapter(getSupportFragmentManager(),
                 tabLayout.getTabCount());
         pager.setAdapter(adapter);
         pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -56,16 +61,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 pager.setCurrentItem(tab.getPosition());
+
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {}
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
 
+
+
+
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,8 +100,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else if (id == R.id.menuAddTaak) {
-            int tabPos = tabLayout.getSelectedTabPosition();
             Intent intent = new Intent(this, AddEditActivity.class);
+            intent.putExtra("tab", TakenlijstDB.LIJST_NAMEN[tabLayout.getSelectedTabPosition()]);
+            startActivity(intent);
+        }
+
+        else if (id == R.id.menuDelete) {
+            //verberg taken die afgerond zijn
+            TabLayout.Tab tab = tabLayout.getTabAt(tabLayout.getSelectedTabPosition());
+            String tabTag = tab.getTag().toString();
+            ArrayList<Taak> taken = db.getTaken(tabTag);
+            for (Taak t: taken) {
+                if (t.getDatumMillisVoltooid() > 0) {
+                    t.setVerborgen(Taak.TRUE);
+                    db.updateTaak(t);
+                }
+            }
+            int currentIndex = pager.getCurrentItem();
+            LijstFragment huidigFragment = adapter.getFragment(currentIndex);
+            huidigFragment.refreshTaskList();
+
+
+
         }
 
         return super.onOptionsItemSelected(item);

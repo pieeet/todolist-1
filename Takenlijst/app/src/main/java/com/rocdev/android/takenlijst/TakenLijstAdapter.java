@@ -36,7 +36,7 @@ public class TakenLijstAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TaakLayout taakLayout = null;
+        TaakLayout taakLayout;
         Taak taak = taken.get(position);
         if (convertView == null) {
             taakLayout = new TaakLayout(context, taak);
@@ -44,7 +44,6 @@ public class TakenLijstAdapter extends BaseAdapter {
             taakLayout = (TaakLayout) convertView;
             taakLayout.setTaak(taak);
         }
-
 
         return taakLayout;
     }

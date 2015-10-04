@@ -11,6 +11,9 @@ public class Taak {
     private long datumMillisVoltooid;
     private int verborgen;
 
+    public static final int TRUE = 1;
+    public static final int False = 0;
+
     public Taak() {
         naam = "";
         notitie = "";

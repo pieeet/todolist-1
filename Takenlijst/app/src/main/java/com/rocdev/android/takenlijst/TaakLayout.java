@@ -1,6 +1,8 @@
 package com.rocdev.android.takenlijst;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -28,6 +30,7 @@ public class TaakLayout extends RelativeLayout implements View.OnClickListener {
         super(context);
         this.context = context;
         db = new TakenlijstDB(context);
+        //this.taak = taak;
 
         //inflate layout
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -35,8 +38,11 @@ public class TaakLayout extends RelativeLayout implements View.OnClickListener {
 
         //maak referenties naar de widgets
         checkBox = (CheckBox) findViewById(R.id.voltooidCheckBox);
+
         naamTextView = (TextView) findViewById(R.id.NaamTextView);
         notitieTextView = (TextView) findViewById(R.id.NotitiesTextView);
+        naamTextView.setTextColor(Color.BLACK);
+        notitieTextView.setTextColor(Color.BLACK);
 
         //set Listeners
         checkBox.setOnClickListener(this);
@@ -56,8 +62,11 @@ public class TaakLayout extends RelativeLayout implements View.OnClickListener {
         }
         if (taak.getDatumMillisVoltooid() > 0) {
             checkBox.setChecked(true);
+            checkBox.setButtonDrawable(android.R.drawable.checkbox_on_background);
+
         } else {
             checkBox.setChecked(false);
+            checkBox.setButtonDrawable(android.R.drawable.checkbox_off_background);
         }
     }
 
@@ -66,14 +75,22 @@ public class TaakLayout extends RelativeLayout implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.voltooidCheckBox:
                 if (checkBox.isChecked()) {
+                    checkBox.setButtonDrawable(android.R.drawable.checkbox_on_background);
                     taak.setDatumMillisVoltooid(System.currentTimeMillis());
                 } else {
+                    checkBox.setButtonDrawable(android.R.drawable.checkbox_off_background);
                     taak.setDatumMillisVoltooid(0);
                 }
                 db.updateTaak(taak);
                 break;
             default:
-                //TODO EditAddActivity maken
+                Intent intent = new Intent(context, AddEditActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("editmode", true);
+                intent.putExtra("taakId", taak.getTaakId());
+                context.startActivity(intent);
+
+
 
         }
 

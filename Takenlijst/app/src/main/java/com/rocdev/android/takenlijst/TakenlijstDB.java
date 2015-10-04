@@ -13,6 +13,8 @@ import java.util.ArrayList;
  * Created by piet on 23-09-15.
  */
 public class TakenlijstDB {
+    //lijst namen staan vast
+    public static final String[] LIJST_NAMEN = {"Persoonlijk", "Zakelijk"};
 
     //database constanten om de tabellen te creëren of droppen
     public static final String DB_NAAM  = "takenlijst.db";
@@ -47,6 +49,9 @@ public class TakenlijstDB {
 
     public static final String TAAK_VERBORGEN = "taak_verborgen";
     public static final int TAAK_VERBORGEN_COL = 5;
+
+    public static final int TAAK_FALSE = 0;
+    public static final int TAAK_TRUE = 1;
 
     //CREATE and DROP TABLE statements
     public static final String CREATE_LIJST_TABLE =
@@ -118,9 +123,24 @@ public class TakenlijstDB {
         return taken;
     }
 
-    public Taak getTaak(int id) {
+    public ArrayList<Lijst> getLijsten() {
+        this.openReadableDB();
+        Cursor cursor = db.query(LIJST_TABEL, null, null, null, null, null, null);
+        ArrayList<Lijst> lijsten = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Lijst l = new Lijst();
+            l.setId(cursor.getInt(LIJST_ID_COL));
+            l.setNaam(cursor.getString(LIJST_NAAM_COL));
+            lijsten.add(l);
+        }
+        this.closeCursor(cursor);
+        this.closeDB();
+        return lijsten;
+    }
+
+    public Taak getTaak(long id) {
         String where = TAAK_ID + "= ?";
-        String[] whereArgs = { Integer.toString(id) };
+        String[] whereArgs = { Long.toString(id) };
         this.openReadableDB();
         Cursor cursor = db.query(TAAK_TABEL, null, where, whereArgs, null, null, null);
         cursor.moveToFirst();
@@ -130,28 +150,10 @@ public class TakenlijstDB {
         return taak;
     }
 
-    public Lijst getLijst(String name) {
-        String where = LIJST_NAAM + "= ?";
-        String[] whereArgs = { name };
-
-        openReadableDB();
-        Cursor cursor = db.query(LIJST_TABEL, null,
-                where, whereArgs, null, null, null);
-        Lijst lijst = null;
-        cursor.moveToFirst();
-        lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
-                cursor.getString(LIJST_NAAM_COL));
-        this.closeCursor(cursor);
-        this.closeDB();
-
-        return lijst;
-    }
-
     private static Taak getTaakVanCursor(Cursor cursor) {
         if (cursor == null || cursor.getCount() == 0){
             return null;
-        }
-        else {
+        } else {
             try {
                 Taak taak = new Taak();
                 taak.setTaakId(cursor.getInt(TAAK_ID_COL));
@@ -161,21 +163,27 @@ public class TakenlijstDB {
                 taak.setDatumMillisVoltooid(cursor.getInt(TAAK_AFGEROND_COL));
                 taak.setVerborgen(cursor.getInt(TAAK_VERBORGEN_COL));
                 return taak;
-            }
-            catch(Exception e) {
-                return null;
-            }
+            } catch(Exception e) {return null;}
         }
     }
 
-    public long voegTaakToe(Taak taak) {
-        ContentValues cv = new ContentValues();
-        cv.put(TAAK_LIJST_ID, taak.getLijstId());
-        cv.put(TAAK_NAAM, taak.getNaam());
-        cv.put(TAAK_NOTITIE, taak.getNotitie());
-        cv.put(TAAK_AFGEROND, taak.getDatumMillisVoltooid());
-        cv.put(TAAK_VERBORGEN, taak.getVerborgen());
+    public Lijst getLijst(String name) {
+        String where = LIJST_NAAM + "= ?";
+        String[] whereArgs = { name };
+        openReadableDB();
+        Cursor cursor = db.query(LIJST_TABEL, null,
+                where, whereArgs, null, null, null);
+        Lijst lijst = null;
+        cursor.moveToFirst();
+        lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
+                cursor.getString(LIJST_NAAM_COL));
+        this.closeCursor(cursor);
+        this.closeDB();
+        return lijst;
+    }
 
+    public long voegTaakToe(Taak taak) {
+        ContentValues cv = this.maakContenValues(taak);
         this.openWritableDB();
         long rijId = db.insert(TAAK_TABEL, null, cv);
         this.closeDB();
@@ -183,20 +191,24 @@ public class TakenlijstDB {
     }
 
     public int updateTaak(Taak taak) {
+        ContentValues cv = this.maakContenValues(taak);
+        String where = TAAK_ID + "= ?";
+        String[] whereArgs = { String.valueOf(taak.getTaakId()) };
+        this.openWritableDB();
+        int rijCount = db.update(TAAK_TABEL, cv, where, whereArgs);
+        Log.d("takenlijst", "rijCount = " + rijCount);
+        this.closeDB();
+        return rijCount;
+    }
+
+    private ContentValues maakContenValues(Taak taak) {
         ContentValues cv = new ContentValues();
         cv.put(TAAK_LIJST_ID, taak.getLijstId());
         cv.put(TAAK_NAAM, taak.getNaam());
         cv.put(TAAK_NOTITIE, taak.getNotitie());
         cv.put(TAAK_AFGEROND, taak.getDatumMillisVoltooid());
         cv.put(TAAK_VERBORGEN, taak.getVerborgen());
-
-        String where = TAAK_ID + "= ?";
-        String[] whereArgs = { String.valueOf(taak.getTaakId()) };
-
-        this.openWritableDB();
-        int rijCount = db.update(TAAK_TABEL, cv, where, whereArgs);
-        this.closeDB();
-        return rijCount;
+        return cv;
     }
 
     public int deleteTaak(long id) {
@@ -214,15 +226,18 @@ public class TakenlijstDB {
 
         public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);
-
-
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_LIJST_TABLE);
             db.execSQL(CREATE_TAAK_TABLE);
-            //paar default lijsten invoeren
+            // default lijsten invoeren
+//            for (String naamLijst: LIJST_NAMEN) {
+//                int teller = 1;
+//                db.execSQL("INSERT INTO lijst VALUES (" + teller + ", '" +  naamLijst + "')");
+//                teller++;
+//            }
             db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
@@ -230,12 +245,10 @@ public class TakenlijstDB {
             "'internet\nelectra\nkrant', 0, 0)");
             db.execSQL("INSERT INTO listview_taak VALUES (2, 1, 'Naar kapper', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (3, 2, 'KvK bellen', " +
+            db.execSQL("INSERT INTO listview_taak VALUES (3, 2, 'Belastingconstructie  bedenken', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (4, 2, 'Manager ontslaan', " +
+            db.execSQL("INSERT INTO listview_taak VALUES (4, 2, 'Helft personeel ontslaan', " +
                     "'', 0, 0)");
-
-
         }
 
         @Override
