@@ -29,8 +29,8 @@ public class TakenlijstDB {
     public static final String LIJST_NAAM = "lijst_naam";
     public static final int LIJST_NAAM_COL = 1;
 
-    //listview_taak-tabel constanten
-    public static final String TAAK_TABEL = "listview_taak";
+    //listview_taak2-tabel constanten
+    public static final String TAAK_TABEL = "listview_taak2";
 
     public static final String TAAK_ID = "_id";
     public static final int TAAK_ID_COL = 0;
@@ -241,13 +241,13 @@ public class TakenlijstDB {
             db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
-            db.execSQL("INSERT INTO listview_taak VALUES (1, 1, 'Rekeningen betalen', " +
+            db.execSQL("INSERT INTO listview_taak2 VALUES (1, 1, 'Rekeningen betalen', " +
             "'internet\nelectra\nkrant', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (2, 1, 'Naar kapper', " +
+            db.execSQL("INSERT INTO listview_taak2 VALUES (2, 1, 'Naar kapper', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (3, 2, 'Belastingconstructie  bedenken', " +
+            db.execSQL("INSERT INTO listview_taak2 VALUES (3, 2, 'Belastingconstructie  bedenken', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (4, 2, 'Helft personeel ontslaan', " +
+            db.execSQL("INSERT INTO listview_taak2 VALUES (4, 2, 'Helft personeel ontslaan', " +
                     "'', 0, 0)");
         }
 
