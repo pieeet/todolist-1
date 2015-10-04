@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //tabLayout.addTab(tabLayout.newTab().setText("Zakelijk"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabPos = tabLayout.getSelectedTabPosition();
+//        tabPos = tabLayout.getSelectedTabPosition();
         pager = (ViewPager) findViewById(R.id.pager);
         adapter = new PagerAdapter(getSupportFragmentManager(),
                 tabLayout.getTabCount());
@@ -73,9 +73,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (savedInstanceState != null) {
+            int tabPos = savedInstanceState.getInt("tabPos");
+            pager.setCurrentItem(tabPos);
+        }
+    }
 
-
-
+    protected void onSaveInstanceState(Bundle outState) {
+        int tabPos = pager.getCurrentItem();
+        outState.putInt("tabPos", tabPos);
     }
 
 
