@@ -34,7 +34,7 @@ public class TaakLayout extends RelativeLayout implements View.OnClickListener {
 
         //inflate layout
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.listview_taak2, this, true);
+        inflater.inflate(R.layout.listview_taak, this, true);
 
         //maak referenties naar de widgets
         checkBox = (CheckBox) findViewById(R.id.voltooidCheckBox);
