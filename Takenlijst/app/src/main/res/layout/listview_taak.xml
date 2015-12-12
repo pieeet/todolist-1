@@ -9,8 +9,7 @@
         android:layout_margin="5dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:checked="false"
-        android:button="@android:drawable/checkbox_off_background"/>
+        android:checked="false" />
 
     <TextView
         android:id="@+id/NaamTextView"

@@ -13,6 +13,4 @@
         android:icon="@drawable/ic_clear_white_48dp"
         android:orderInCategory="1"> </item>
 
-
-
 </menu>

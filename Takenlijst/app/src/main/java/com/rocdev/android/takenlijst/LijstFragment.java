@@ -58,7 +58,8 @@ public class LijstFragment extends Fragment {
         //get takenlijst voor huidige tab
         Context context = getActivity().getApplicationContext();
         TakenlijstDB db = new TakenlijstDB(context);
-        ArrayList<Taak> taken = db.getTaken(TakenlijstDB.LIJST_NAMEN[tabPos]);
+        String lijstnaam = db.getLijst(tabPos + 1).getNaam();
+        ArrayList<Taak> taken = db.getTaken(lijstnaam);
 
 
         //maak custom adapter

@@ -2,17 +2,12 @@ package com.rocdev.android.takenlijst;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,35 +17,22 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     int tabPos;
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
         db = new TakenlijstDB(getApplicationContext());
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        for (String lijstnaam: TakenlijstDB.LIJST_NAMEN) {
+        for (Lijst lijst: db.getLijsten()) {
             TabLayout.Tab tab = tabLayout.newTab();
+            String lijstnaam = lijst.getNaam();
             tab.setText(lijstnaam);
             tab.setTag(lijstnaam);
             tabLayout.addTab(tab);
         }
-        //tabLayout.addTab(tabLayout.newTab().setText("Zakelijk"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-//        tabPos = tabLayout.getSelectedTabPosition();
         pager = (ViewPager) findViewById(R.id.pager);
         adapter = new PagerAdapter(getSupportFragmentManager(),
                 tabLayout.getTabCount());
@@ -60,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                pager.setCurrentItem(tab.getPosition());
+                tabPos = tab.getPosition();
+                pager.setCurrentItem(tabPos);
 
             }
 
@@ -80,11 +63,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void onSaveInstanceState(Bundle outState) {
-        int tabPos = pager.getCurrentItem();
+        tabPos = pager.getCurrentItem();
         outState.putInt("tabPos", tabPos);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
         else if (id == R.id.menuAddTaak) {
             Intent intent = new Intent(this, AddEditActivity.class);
-            intent.putExtra("tab", TakenlijstDB.LIJST_NAMEN[tabLayout.getSelectedTabPosition()]);
+            Lijst lijst = db.getLijst(tabLayout.getSelectedTabPosition() + 1);
+            intent.putExtra("tab", lijst.getNaam());
             startActivity(intent);
         }
 
@@ -125,11 +107,10 @@ public class MainActivity extends AppCompatActivity {
             int currentIndex = pager.getCurrentItem();
             LijstFragment huidigFragment = adapter.getFragment(currentIndex);
             huidigFragment.refreshTaskList();
-
-
-
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

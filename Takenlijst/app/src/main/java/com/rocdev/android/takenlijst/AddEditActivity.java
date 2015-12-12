@@ -30,7 +30,6 @@ public class AddEditActivity extends AppCompatActivity
     private Spinner lijstSpinner;
     private EditText naamEditText;
     private EditText notitieEditText;
-
     private TakenlijstDB db;
     private boolean editMode;
     private Taak taak;
@@ -130,7 +129,6 @@ public class AddEditActivity extends AppCompatActivity
             taak = new Taak();
         }
 
-//        Taak taak = new Taak();
         taak.setLijstId(lijstId);
         taak.setNaam(naam);
         taak.setNotitie(notitie);
@@ -140,21 +138,7 @@ public class AddEditActivity extends AppCompatActivity
         } else {
             long rijId = db.voegTaakToe(taak);
         }
-
     }
-
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-
-
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {

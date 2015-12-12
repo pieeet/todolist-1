@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class TakenlijstDB {
     //lijst namen staan vast
-    public static final String[] LIJST_NAMEN = {"Persoonlijk", "Zakelijk"};
+//    public static final String[] LIJST_NAMEN = {"Persoonlijk", "Zakelijk"};
 
     //database constanten om de tabellen te creëren of droppen
     public static final String DB_NAAM  = "takenlijst.db";
@@ -68,8 +68,6 @@ public class TakenlijstDB {
                     TAAK_AFGEROND + " INTEGER, " +
                     TAAK_VERBORGEN + " INTEGER);";
 
-
-
     public static final String DROP_LIJST_TABEL =
             "DROP TABLE IF EXISTS " + LIJST_TABEL;
 
@@ -109,14 +107,18 @@ public class TakenlijstDB {
     public ArrayList<Taak> getTaken(String lijstNaam) {
 
         String where = TAAK_LIJST_ID + "= ? AND " +
-                TAAK_VERBORGEN + "!=1";
+                TAAK_VERBORGEN + " != 1";
         int listID = getLijst(lijstNaam).getId();
         String[] whereArgs = { Integer.toString(listID)};
         this.openReadableDB();
         Cursor cursor = db.query(TAAK_TABEL, null, where, whereArgs, null, null, null);
         ArrayList<Taak> taken = new ArrayList<>();
         while (cursor.moveToNext()) {
-            taken.add(getTaakVanCursor(cursor));
+            Taak taak = getTaakVanCursor(cursor);
+            if (taak.getVerborgen() != 1) {
+                taken.add(taak);
+            }
+
         }
         closeCursor(cursor);
         closeDB();
@@ -160,12 +162,14 @@ public class TakenlijstDB {
                 taak.setLijstId(cursor.getInt(TAAK_LIJST_ID_COL));
                 taak.setNaam(cursor.getString(TAAK_NAAM_COL));
                 taak.setNotitie(cursor.getString(TAAK_NOTITIE_COL));
-                taak.setDatumMillisVoltooid(cursor.getInt(TAAK_AFGEROND_COL));
+                taak.setDatumMillisVoltooid(cursor.getLong(TAAK_AFGEROND_COL));
                 taak.setVerborgen(cursor.getInt(TAAK_VERBORGEN_COL));
                 return taak;
             } catch(Exception e) {return null;}
         }
     }
+
+
 
     public Lijst getLijst(String name) {
         String where = LIJST_NAAM + "= ?";
@@ -182,6 +186,24 @@ public class TakenlijstDB {
         return lijst;
     }
 
+    //haal lijst met id
+    public Lijst getLijst(long id) {
+        String where = LIJST_ID + "= ?";
+        String[] whereArgs = { Long.toString(id)};
+        openReadableDB();
+        Cursor cursor = db.query(LIJST_TABEL, null,
+                where, whereArgs, null, null, null);
+        Lijst lijst = null;
+        cursor.moveToFirst();
+        lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
+                cursor.getString(LIJST_NAAM_COL));
+        this.closeCursor(cursor);
+        this.closeDB();
+        return lijst;
+    }
+
+
+
     public long voegTaakToe(Taak taak) {
         ContentValues cv = this.maakContenValues(taak);
         this.openWritableDB();
@@ -192,7 +214,7 @@ public class TakenlijstDB {
 
     public int updateTaak(Taak taak) {
         ContentValues cv = this.maakContenValues(taak);
-        String where = TAAK_ID + "= ?";
+        String where = TAAK_ID + " = ?";
         String[] whereArgs = { String.valueOf(taak.getTaakId()) };
         this.openWritableDB();
         int rijCount = db.update(TAAK_TABEL, cv, where, whereArgs);
@@ -232,12 +254,7 @@ public class TakenlijstDB {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_LIJST_TABLE);
             db.execSQL(CREATE_TAAK_TABLE);
-            // default lijsten invoeren
-//            for (String naamLijst: LIJST_NAMEN) {
-//                int teller = 1;
-//                db.execSQL("INSERT INTO lijst VALUES (" + teller + ", '" +  naamLijst + "')");
-//                teller++;
-//            }
+
             db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
             //paar default taken invoeren
