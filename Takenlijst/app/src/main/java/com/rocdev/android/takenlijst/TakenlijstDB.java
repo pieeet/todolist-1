@@ -10,11 +10,9 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by piet on 23-09-15.
+ * Created by piet on 23-09-15. Voor hoofdstuk 9 Android cursus
  */
 public class TakenlijstDB {
-    //lijst namen staan vast
-//    public static final String[] LIJST_NAMEN = {"Persoonlijk", "Zakelijk"};
 
     //database constanten om de tabellen te creëren of droppen
     public static final String DB_NAAM  = "takenlijst.db";
@@ -29,8 +27,8 @@ public class TakenlijstDB {
     public static final String LIJST_NAAM = "lijst_naam";
     public static final int LIJST_NAAM_COL = 1;
 
-    //listview_taak-tabel constanten
-    public static final String TAAK_TABEL = "listview_taak";
+    //taak-tabel constanten
+    public static final String TAAK_TABEL = "taak";
 
     public static final String TAAK_ID = "_id";
     public static final int TAAK_ID_COL = 0;
@@ -50,8 +48,6 @@ public class TakenlijstDB {
     public static final String TAAK_VERBORGEN = "taak_verborgen";
     public static final int TAAK_VERBORGEN_COL = 5;
 
-    public static final int TAAK_FALSE = 0;
-    public static final int TAAK_TRUE = 1;
 
     //CREATE and DROP TABLE statements
     public static final String CREATE_LIJST_TABLE =
@@ -104,6 +100,8 @@ public class TakenlijstDB {
         }
     }
 
+    // public methoden
+
     public ArrayList<Taak> getTaken(String lijstNaam) {
 
         String where = TAAK_LIJST_ID + "= ? AND " +
@@ -130,10 +128,10 @@ public class TakenlijstDB {
         Cursor cursor = db.query(LIJST_TABEL, null, null, null, null, null, null);
         ArrayList<Lijst> lijsten = new ArrayList<>();
         while (cursor.moveToNext()) {
-            Lijst l = new Lijst();
-            l.setId(cursor.getInt(LIJST_ID_COL));
-            l.setNaam(cursor.getString(LIJST_NAAM_COL));
-            lijsten.add(l);
+            Lijst lijst = new Lijst();
+            lijst.setId(cursor.getInt(LIJST_ID_COL));
+            lijst.setNaam(cursor.getString(LIJST_NAAM_COL));
+            lijsten.add(lijst);
         }
         this.closeCursor(cursor);
         this.closeDB();
@@ -177,7 +175,7 @@ public class TakenlijstDB {
         openReadableDB();
         Cursor cursor = db.query(LIJST_TABEL, null,
                 where, whereArgs, null, null, null);
-        Lijst lijst = null;
+        Lijst lijst;
         cursor.moveToFirst();
         lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
                 cursor.getString(LIJST_NAAM_COL));
@@ -193,7 +191,7 @@ public class TakenlijstDB {
         openReadableDB();
         Cursor cursor = db.query(LIJST_TABEL, null,
                 where, whereArgs, null, null, null);
-        Lijst lijst = null;
+        Lijst lijst;
         cursor.moveToFirst();
         lijst = new Lijst(cursor.getInt(LIJST_ID_COL),
                 cursor.getString(LIJST_NAAM_COL));
@@ -201,8 +199,6 @@ public class TakenlijstDB {
         this.closeDB();
         return lijst;
     }
-
-
 
     public long voegTaakToe(Taak taak) {
         ContentValues cv = this.maakContenValues(taak);
@@ -233,14 +229,15 @@ public class TakenlijstDB {
         return cv;
     }
 
-    public int deleteTaak(long id) {
-        String where = TAAK_ID + "= ?";
-        String[] whereArgs = { String.valueOf(id)};
-        this.openWritableDB();
-        int rijCount = db.delete(TAAK_TABEL, where, whereArgs);
-        this.closeDB();
-        return rijCount;
-    }
+    //evt methode deleteTaak voor permanent verwijderen
+//    public int deleteTaak(long id) {
+//        String where = TAAK_ID + "= ?";
+//        String[] whereArgs = { String.valueOf(id)};
+//        this.openWritableDB();
+//        int rijCount = db.delete(TAAK_TABEL, where, whereArgs);
+//        this.closeDB();
+//        return rijCount;
+//    }
 
 
 
@@ -255,16 +252,18 @@ public class TakenlijstDB {
             db.execSQL(CREATE_LIJST_TABLE);
             db.execSQL(CREATE_TAAK_TABLE);
 
+            //maak twee lijsten aan
             db.execSQL("INSERT INTO lijst VALUES (1, 'Persoonlijk')");
             db.execSQL("INSERT INTO lijst VALUES (2, 'Zakelijk')");
+
             //paar default taken invoeren
-            db.execSQL("INSERT INTO listview_taak VALUES (1, 1, 'Rekeningen betalen', " +
+            db.execSQL("INSERT INTO taak VALUES (1, 1, 'Rekeningen betalen', " +
             "'internet\nelectra\nkrant', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (2, 1, 'Naar kapper', " +
+            db.execSQL("INSERT INTO taak VALUES (2, 1, 'Naar kapper', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (3, 2, 'Belastingconstructie  bedenken', " +
+            db.execSQL("INSERT INTO taak VALUES (3, 2, 'Belastingconstructie  bedenken', " +
                     "'', 0, 0)");
-            db.execSQL("INSERT INTO listview_taak VALUES (4, 2, 'Helft personeel ontslaan', " +
+            db.execSQL("INSERT INTO taak VALUES (4, 2, 'Helft personeel ontslaan', " +
                     "'', 0, 0)");
         }
 
@@ -275,7 +274,6 @@ public class TakenlijstDB {
             db.execSQL(DROP_LIJST_TABEL);
             db.execSQL(DROP_TAAK_TABEL);
             onCreate(db);
-
         }
     }
 
